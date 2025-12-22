@@ -1,3 +1,4 @@
 .states
 /node_modules/
 /test/
+.env

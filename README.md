@@ -22,7 +22,7 @@ pnpm add --save-dev @nomicfoundation/hardhat-toolbox-viem @nomicfoundation/hardh
 
 ### Deploy
 - **Note**: 
-    - Đảm bảo `ignition/modules/<tên_contract>.sol` và `contracts/<tên_contract>.sol` đã có
+    - Đảm bảo `ignition/modules/<tên_contract>.ts` và `contracts/<tên_contract>.sol` đã có
 - First terminal : `pnpm hardhat node` 
     - **Example output :** 
 ```bash
@@ -73,6 +73,9 @@ SimpleStorageModule#SimpleStorage - 0x5FbDB2315678afecb367f032d93F642f64180aa3
 - Copy địa chỉ Contract bên vừa tạo ở Terminal 2 :  `0x5FbDB2315678afecb367f032d93F642f64180aa3`
     - Paste vào `App.js` : `const contractAddr = '0x5FbDB2315678afecb367f032d93F642f64180aa3';`
 - Copy `abi` trong `ignition/deployments/artifacts/<tên_contract>.json` và paste vào `abis.js`
+- Pinata : https://pinata.cloud/ 
+    - Lấy ra `JWT` và `Gateway` 
+    - Paste vào `.env` 
 
 ``` bash
 cd ../client/
@@ -81,3 +84,10 @@ npm start
 - Output: 
 ![alt text](assets/1.2.transaction.png)
 ![alt text](assets/1.3.test_result.png)
+
+# Todo
+- [ ] Verify logic smart contract
+- [ ] Build better UI 
+- [ ] Build access control (owner, user,...)
+- [ ] Build test case
+- [ ] Deploy contract to testnet - Sepolia (Optional - cost real gas)
