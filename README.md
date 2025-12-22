@@ -88,6 +88,7 @@ npm start
 # Todo
 - [ ] Verify logic smart contract
 - [ ] Build better UI 
-- [ ] Build access control (owner, user,...)
 - [ ] Build test case
+- [ ] Test access with multi computers
+- [ ] Build access control (owner, user,...) (Optional)
 - [ ] Deploy contract to testnet - Sepolia (Optional - cost real gas)
