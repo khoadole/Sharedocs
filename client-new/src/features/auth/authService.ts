@@ -50,6 +50,30 @@ export async function loginUser(data: LoginData): Promise<ApiResponse> {
   }
 }
 
+// Login with wallet address
+export async function loginWithWallet(walletAddress: string): Promise<ApiResponse> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/auth/login/wallet`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ walletAddress }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || 'Wallet login failed');
+    }
+
+    return result;
+  } catch (error) {
+    console.error('Wallet login error:', error);
+    throw error;
+  }
+}
+
 // Connect wallet to existing account (upgrades USER to UPLOADER)
 export async function connectWallet(userId: string, walletAddress: string): Promise<ApiResponse> {
   try {
