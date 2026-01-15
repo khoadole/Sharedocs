@@ -5,8 +5,9 @@ import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { FileCheck, ArrowRight, Mail, Lock } from 'lucide-react';
-import { loginUser } from '@/features/auth/authService';
+import { loginUser, loginWithWallet } from '@/features/auth/authService';
 import { saveUser } from '@/features/auth/authStorage';
+import { connectWallet as getWalletAddress } from '@/lib/web3';
 
 export function SignIn() {
   const navigate = useNavigate();
@@ -34,6 +35,34 @@ export function SignIn() {
       }
     } catch (error: any) {
       toast.error(error.message || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleMetaMaskLogin = async () => {
+    try {
+      setLoading(true);
+
+      // Step 1: Get wallet address from MetaMask
+      toast.info('Connecting MetaMask...');
+      const walletAddress = await getWalletAddress();
+
+      // Step 2: Login with wallet address
+      toast.info('Authenticating...');
+      const result = await loginWithWallet(walletAddress);
+
+      if (result.success && result.user) {
+        saveUser(result.user);
+        toast.success('Login successful!');
+
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 1000);
+      }
+    } catch (error: any) {
+      console.error('MetaMask login error:', error);
+      toast.error(error.message || 'MetaMask login failed');
     } finally {
       setLoading(false);
     }
@@ -182,19 +211,12 @@ export function SignIn() {
           {/* MetaMask Button */}
           <button
             type="button"
-            className="w-full h-14 rounded-2xl border border-border bg-card hover:border-orange-400 hover:bg-orange-50/10 dark:hover:bg-orange-500/10 transition-all duration-300 flex items-center justify-center space-x-3 font-medium text-foreground shadow-sm"
+            onClick={handleMetaMaskLogin}
+            disabled={loading}
+            className="w-full h-14 rounded-2xl border border-border bg-card hover:border-orange-400 hover:bg-orange-50/10 dark:hover:bg-orange-500/10 transition-all duration-300 flex items-center justify-center space-x-3 font-medium text-foreground shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <svg className="w-6 h-6" viewBox="0 0 35 33" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M32.9582 1L19.8241 10.7183L22.2665 4.99099L32.9582 1Z" fill="#E17726" stroke="#E17726" strokeWidth="0.25" />
-              <path d="M2.04858 1L15.0707 10.809L12.7423 4.99098L2.04858 1Z" fill="#E27625" stroke="#E27625" strokeWidth="0.25" />
-              <path d="M28.2292 23.5334L24.7346 28.872L32.2175 30.9323L34.3611 23.6501L28.2292 23.5334Z" fill="#E27625" stroke="#E27625" strokeWidth="0.25" />
-              <path d="M0.657715 23.6501L2.78909 30.9323L10.2603 28.872L6.77738 23.5334L0.657715 23.6501Z" fill="#E27625" stroke="#E27625" strokeWidth="0.25" />
-              <path d="M9.87573 14.5149L7.79932 17.6507L15.1906 17.9939L14.9428 9.92163L9.87573 14.5149Z" fill="#E27625" stroke="#E27625" strokeWidth="0.25" />
-              <path d="M25.1307 14.5149L19.9926 9.83044L19.8241 17.9939L27.2036 17.6507L25.1307 14.5149Z" fill="#E27625" stroke="#E27625" strokeWidth="0.25" />
-              <path d="M10.2603 28.872L14.7351 26.6949L10.8796 23.7011L10.2603 28.872Z" fill="#E27625" stroke="#E27625" strokeWidth="0.25" />
-              <path d="M20.2715 26.6949L24.7346 28.872L24.1271 23.7011L20.2715 26.6949Z" fill="#E27625" stroke="#E27625" strokeWidth="0.25" />
-            </svg>
-            <span>Connect MetaMask</span>
+            <img src="/metamask.png" alt="MetaMask" className="w-6 h-6 object-contain" />
+            <span>{loading ? 'Processing...' : 'Sign in with MetaMask'}</span>
           </button>
         </motion.div>
       </main>
