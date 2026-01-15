@@ -182,8 +182,7 @@ class AuthService {
     const user = await userService.findByEmail(email);
     if (!user) {
       console.log(`[DEBUG] Email not found in database: ${email}`);
-      // For security, don't reveal if email exists
-      return;
+      throw new Error('Email not registered');
     }
 
     console.log(`[DEBUG] Generating reset token for user: ${user.id}`);

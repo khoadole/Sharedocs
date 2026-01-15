@@ -86,6 +86,11 @@ export async function forgotPassword(email: string): Promise<ApiResponse> {
     });
 
     const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || 'Failed to send reset link');
+    }
+
     return result;
   } catch (error) {
     console.error('Forgot password error:', error);

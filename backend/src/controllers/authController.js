@@ -241,13 +241,15 @@ class AuthController {
 
       await authService.forgotPassword(email);
 
-      // Always return success to prevent email enumeration
       return res.status(200).json({
         success: true,
-        message: 'If an account exists with that email, a password reset link has been sent.'
+        message: 'A password reset link has been sent to your email.'
       });
     } catch (error) {
       console.error('Forgot password error:', error);
+      if (error.message === 'Email not registered') {
+        return res.status(404).json({ success: false, error: error.message });
+      }
       return res.status(500).json({ success: false, error: 'Failed to process request' });
     }
   }
