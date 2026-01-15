@@ -38,7 +38,8 @@ export function SignUp() {
       const result = await registerUser({
         email: formData.email,
         password: formData.password,
-        fullName: formData.name || undefined
+        fullName: formData.name || undefined,
+        role: formData.userType === 'uploader' ? 'UPLOADER' : 'USER'
       });
 
       if (result.success && result.user) {

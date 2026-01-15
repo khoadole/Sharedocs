@@ -15,6 +15,8 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { H2, Text, Code } from '@/components/typography';
 import { getContract, formatTimestamp, formatAddress } from '@/lib/web3';
+import { getUser } from '@/features/auth/authStorage';
+import { LoginRequired } from '@/components/auth/LoginRequired';
 
 interface Document {
   hash: string;
@@ -28,6 +30,8 @@ export function Dashboard() {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [account, setAccount] = useState<string>('');
+
+  const user = getUser();
 
   useEffect(() => {
     loadDocuments();
@@ -69,6 +73,10 @@ export function Dashboard() {
       setLoading(false);
     }
   };
+
+  if (!user) {
+    return <LoginRequired />;
+  }
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">

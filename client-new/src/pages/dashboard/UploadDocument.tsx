@@ -9,6 +9,8 @@ import { H2, Text, Code } from '@/components/typography';
 import { uploadToPinata, hashFile } from '@/lib/ipfs';
 import { getContract } from '@/lib/web3';
 import { toast } from 'sonner';
+import { getUser } from '@/features/auth/authStorage';
+import { LoginRequired } from '@/components/auth/LoginRequired';
 
 export function UploadDocument() {
   const [file, setFile] = useState<File | null>(null);
@@ -20,13 +22,6 @@ export function UploadDocument() {
     txHash: string;
   } | null>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
-      setResult(null);
-    }
-  };
-
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
@@ -34,6 +29,19 @@ export function UploadDocument() {
       setResult(null);
     }
   }, []);
+
+  const user = getUser();
+
+  if (!user) {
+    return <LoginRequired />;
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+      setResult(null);
+    }
+  };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();

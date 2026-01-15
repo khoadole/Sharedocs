@@ -1,13 +1,17 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Moon, Sun, Upload, FileCheck, Menu } from 'lucide-react';
+import { Moon, Sun, Upload, FileCheck, Menu, LogOut, User } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 import { formatAddress } from '@/lib/web3';
+import { getUser, removeUser } from '@/features/auth/authStorage';
+import { Badge } from '@/components/ui/badge';
+import { toast } from 'sonner';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 
 interface NavbarProps {
@@ -17,6 +21,14 @@ interface NavbarProps {
 
 export function Navbar({ account, onConnect }: NavbarProps) {
   const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
+  const user = getUser();
+
+  const handleLogout = () => {
+    removeUser();
+    toast.success('Logged out successfully');
+    navigate('/signin');
+  };
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -31,21 +43,25 @@ export function Navbar({ account, onConnect }: NavbarProps) {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-6">
-          <Link to="/upload">
-            <Button variant="ghost" size="sm">
-              <Upload className="mr-2 h-4 w-4" />
-              Upload
-            </Button>
-          </Link>
+          {user && (
+            <>
+              <Link to="/upload">
+                <Button variant="ghost" size="sm">
+                  <Upload className="mr-2 h-4 w-4" />
+                  Upload
+                </Button>
+              </Link>
+              <Link to="/dashboard">
+                <Button variant="ghost" size="sm">
+                  My Documents
+                </Button>
+              </Link>
+            </>
+          )}
           <Link to="/verify">
             <Button variant="ghost" size="sm">
               <FileCheck className="mr-2 h-4 w-4" />
               Verify
-            </Button>
-          </Link>
-          <Link to="/dashboard">
-            <Button variant="ghost" size="sm">
-              My Documents
             </Button>
           </Link>
         </div>
@@ -66,15 +82,47 @@ export function Navbar({ account, onConnect }: NavbarProps) {
             )}
           </Button>
 
+          {/* User Info & Logout */}
+          {user ? (
+            <>
+              <div className="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-lg border bg-card">
+                <User className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm font-medium">{user.email}</span>
+                <Badge variant={user.role === 'UPLOADER' ? 'default' : 'secondary'} className="text-xs">
+                  {user.role}
+                </Badge>
+              </div>
+              <Button variant="outline" size="sm" onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </Button>
+            </>
+          ) : (
+            <>
+              <Link to="/signin">
+                <Button variant="ghost" size="sm">
+                  Sign In
+                </Button>
+              </Link>
+              <Link to="/signup">
+                <Button variant="default" size="sm">
+                  Sign Up
+                </Button>
+              </Link>
+            </>
+          )}
+
           {/* Wallet Connection */}
           {account ? (
             <Button variant="outline" size="sm">
               {formatAddress(account)}
             </Button>
           ) : (
-            <Button variant="default" size="sm" onClick={onConnect}>
-              Connect Wallet
-            </Button>
+            user && (
+              <Button variant="default" size="sm" onClick={onConnect}>
+                Connect Wallet
+              </Button>
+            )
           )}
 
           {/* Mobile Menu */}
@@ -86,21 +134,46 @@ export function Navbar({ account, onConnect }: NavbarProps) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem asChild>
-                  <Link to="/upload" className="flex items-center">
-                    <Upload className="mr-2 h-4 w-4" />
-                    Upload
-                  </Link>
-                </DropdownMenuItem>
+                {user && (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link to="/upload" className="flex items-center">
+                        <Upload className="mr-2 h-4 w-4" />
+                        Upload
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/dashboard">My Documents</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
                 <DropdownMenuItem asChild>
                   <Link to="/verify" className="flex items-center">
                     <FileCheck className="mr-2 h-4 w-4" />
                     Verify
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/dashboard">My Documents</Link>
-                </DropdownMenuItem>
+                {user && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Logout
+                    </DropdownMenuItem>
+                  </>
+                )}
+                {!user && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link to="/signin">Sign In</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/signup">Sign Up</Link>
+                    </DropdownMenuItem>
+                  </>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

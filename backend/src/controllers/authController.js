@@ -7,7 +7,7 @@ class AuthController {
    */
   async register(req, res) {
     try {
-      const { email, password, walletAddress, fullName } = req.body;
+      const { email, password, walletAddress, fullName, role } = req.body;
 
       // Validate required fields
       if (!email || !password) {
@@ -22,7 +22,8 @@ class AuthController {
         email,
         password,
         walletAddress, // Optional
-        fullName
+        fullName,
+        role // Optional, defaults to 'USER' in service
       });
 
       return res.status(201).json({

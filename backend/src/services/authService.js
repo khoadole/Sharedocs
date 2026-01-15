@@ -9,7 +9,7 @@ class AuthService {
    * @param {Object} userData - User registration data
    * @returns {Promise<Object>} Created user
    */
-  async register({ email, password, walletAddress, fullName }) {
+  async register({ email, password, walletAddress, fullName, role }) {
     // Validate required fields - email and password are now required
     if (!email || !password) {
       throw new Error('Email and password are required');
@@ -42,13 +42,13 @@ class AuthService {
     // Hash password
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
 
-    // Create user
+    // Create user with specified role or default to USER
     const user = await userService.createUser({
       walletAddress: walletAddress || null,
       email,
       passwordHash,
       fullName: fullName || null,
-      role: 'USER'
+      role: role || 'USER'
     });
 
     return userService.formatUser(user);
