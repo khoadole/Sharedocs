@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FileCheck, Upload, Clock, ExternalLink } from 'lucide-react';
+import { FileCheck, Upload, Clock, ExternalLink, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -17,9 +17,16 @@ import { H2, Text, Code } from '@/components/typography';
 import { formatAddress } from '@/lib/web3';
 import { getUser } from '@/features/auth/authStorage';
 import { LoginRequired } from '@/components/auth/LoginRequired';
-import { getUserDocuments } from '@/features/documents/documentService';
+import { getUserDocuments, updateDocument } from '@/features/documents/documentService';
 import type { Document } from '@/types/documents/types';
 import { toast } from 'sonner';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function Dashboard() {
   const [documents, setDocuments] = useState<Document[]>([]);
@@ -64,6 +71,26 @@ export function Dashboard() {
       toast.error('Failed to load documents');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleVisibilityChange = async (documentId: string, newVisibility: 'PUBLIC' | 'PRIVATE') => {
+    if (!user) return;
+    
+    try {
+      await updateDocument(documentId, user.id, { visibility: newVisibility });
+      
+      // Update local state
+      setDocuments(docs => 
+        docs.map(doc => 
+          doc.id === documentId ? { ...doc, visibility: newVisibility } : doc
+        )
+      );
+      
+      toast.success(`Document visibility updated to ${newVisibility}`);
+    } catch (error) {
+      console.error('Error updating visibility:', error);
+      toast.error('Failed to update visibility');
     }
   };
 
@@ -181,9 +208,22 @@ export function Dashboard() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Code className="text-xs">
-                        {doc.document_hash.substring(0, 10)}...
-                      </Code>
+                      <div className="flex items-center gap-2">
+                        <Code className="text-xs">
+                          {doc.document_hash.substring(0, 10)}...
+                        </Code>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6"
+                          onClick={() => {
+                            navigator.clipboard.writeText(doc.document_hash);
+                            toast.success('Hash copied!');
+                          }}
+                        >
+                          <Copy className="h-3 w-3" />
+                        </Button>
+                      </div>
                     </TableCell>
                     <TableCell>
                       <a
@@ -197,9 +237,28 @@ export function Dashboard() {
                       </a>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={doc.visibility === 'PUBLIC' ? 'default' : 'secondary'}>
-                        {doc.visibility}
-                      </Badge>
+                      <Select 
+                        value={doc.visibility} 
+                        onValueChange={(value) => handleVisibilityChange(doc.id, value as 'PUBLIC' | 'PRIVATE')}
+                      >
+                        <SelectTrigger className="w-[110px] bg-secondary/50 hover:bg-secondary">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="PUBLIC">
+                            <div className="flex items-center gap-2">
+                              <div className="h-2 w-2 rounded-full bg-green-500" />
+                              Public
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="PRIVATE">
+                            <div className="flex items-center gap-2">
+                              <div className="h-2 w-2 rounded-full bg-gray-500" />
+                              Private
+                            </div>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
                     </TableCell>
                   </TableRow>
                 ))}
