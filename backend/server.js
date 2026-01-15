@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './src/config/swagger.js';
 import authRoutes from './src/routes/authRoutes.js';
+import documentRoutes from './src/routes/documentRoutes.js';
 import pool from './src/db/config.js';
 
 // Load environment variables
@@ -46,6 +47,7 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/documents', documentRoutes);
 
 // 404 handler
 app.use((req, res) => {
