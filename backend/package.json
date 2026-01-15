@@ -1,0 +1,33 @@
+{
+  "name": "sharedocs-backend",
+  "version": "1.0.0",
+  "description": "Backend API for Sharedocs document verification platform",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "migrate": "node src/db/migrate.js"
+  },
+  "keywords": [
+    "blockchain",
+    "document-verification",
+    "ipfs",
+    "ethereum"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "pg": "^8.11.3",
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.3.1",
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.2",
+    "swagger-ui-express": "^5.0.0",
+    "swagger-jsdoc": "^6.2.8"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
