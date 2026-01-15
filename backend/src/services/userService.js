@@ -12,10 +12,10 @@ class UserService {
       VALUES ($1, $2, $3, $4, $5)
       RETURNING id, wallet_address, email, full_name, role, created_at, updated_at
     `;
-    
+
     const values = [walletAddress, email, passwordHash, fullName, role];
     const result = await query(sql, values);
-    
+
     return result.rows[0];
   }
 
@@ -30,7 +30,7 @@ class UserService {
       FROM users
       WHERE email = $1
     `;
-    
+
     const result = await query(sql, [email]);
     return result.rows[0] || null;
   }
@@ -46,7 +46,7 @@ class UserService {
       FROM users
       WHERE wallet_address = $1
     `;
-    
+
     const result = await query(sql, [walletAddress]);
     return result.rows[0] || null;
   }
@@ -62,7 +62,7 @@ class UserService {
       FROM users
       WHERE id = $1
     `;
-    
+
     const result = await query(sql, [userId]);
     return result.rows[0] || null;
   }
@@ -96,7 +96,7 @@ class UserService {
    * @returns {Promise<Object>} Updated user
    */
   async updateUser(userId, updates) {
-    const allowedFields = ['email', 'full_name', 'password_hash', 'wallet_address', 'role'];
+    const allowedFields = ['email', 'full_name', 'password_hash', 'wallet_address', 'role', 'reset_password_token', 'reset_password_expires'];
     const fields = [];
     const values = [];
     let paramCount = 1;
@@ -134,9 +134,16 @@ class UserService {
    */
   formatUser(user) {
     if (!user) return null;
-    
+
     const { password_hash, ...userWithoutPassword } = user;
     return userWithoutPassword;
+  }
+
+  /**
+   * Execute raw query (convenience)
+   */
+  async query(text, params) {
+    return query(text, params);
   }
 }
 

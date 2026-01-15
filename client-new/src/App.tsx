@@ -5,6 +5,8 @@ import { Layout } from '@/components/layout/Layout';
 import { Home } from '@/pages/Home';
 import { SignIn } from '@/pages/auth/SignIn';
 import { SignUp } from '@/pages/auth/SignUp';
+import { ForgotPassword } from '@/pages/auth/ForgotPassword';
+import { ResetPassword } from '@/pages/auth/ResetPassword';
 import { Dashboard } from '@/pages/dashboard/Dashboard';
 import { UploadDocument } from '@/pages/dashboard/UploadDocument';
 import { VerifyDocument } from '@/pages/dashboard/VerifyDocument';
@@ -18,7 +20,7 @@ function App() {
 
   useEffect(() => {
     checkConnection();
-    
+
     // Listen for account changes
     if (window.ethereum) {
       window.ethereum.on('accountsChanged', handleAccountsChanged);
@@ -80,6 +82,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
 
           {/* Protected Routes with Layout */}
           <Route

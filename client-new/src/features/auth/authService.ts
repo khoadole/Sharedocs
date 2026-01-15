@@ -14,7 +14,7 @@ export async function registerUser(data: RegisterData): Promise<ApiResponse> {
     });
 
     const result = await response.json();
-    
+
     if (!response.ok) {
       throw new Error(result.error || 'Registration failed');
     }
@@ -38,7 +38,7 @@ export async function loginUser(data: LoginData): Promise<ApiResponse> {
     });
 
     const result = await response.json();
-    
+
     if (!response.ok) {
       throw new Error(result.error || 'Login failed');
     }
@@ -62,7 +62,7 @@ export async function connectWallet(userId: string, walletAddress: string): Prom
     });
 
     const result = await response.json();
-    
+
     if (!response.ok) {
       throw new Error(result.error || 'Failed to connect wallet');
     }
@@ -70,6 +70,49 @@ export async function connectWallet(userId: string, walletAddress: string): Prom
     return result;
   } catch (error) {
     console.error('Connect wallet error:', error);
+    throw error;
+  }
+}
+
+// Request password reset link
+export async function forgotPassword(email: string): Promise<ApiResponse> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/auth/forgot-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    throw error;
+  }
+}
+
+// Reset password with token
+export async function resetPassword(data: any): Promise<ApiResponse> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/auth/reset-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || 'Password reset failed');
+    }
+
+    return result;
+  } catch (error) {
+    console.error('Reset password error:', error);
     throw error;
   }
 }

@@ -163,44 +163,71 @@ router.post('/login/wallet', authController.loginWithWallet);
 
 /**
  * @swagger
- * /api/auth/me:
- *   get:
- *     summary: Get current user info
+ * /api/auth/forgot-password:
+ *   post:
+ *     summary: Request password reset
  *     tags: [Authentication]
- *     description: Get information about the currently authenticated user (demo - not implemented)
+ *     description: Send a password reset link to the user's email
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *           example:
+ *             email: "user@example.com"
  *     responses:
  *       200:
- *         description: User information retrieved
+ *         description: Reset link sent
+ *       400:
+ *         description: Bad request
  *       500:
  *         description: Internal server error
  */
-router.get('/me', authController.getCurrentUser);
+router.post('/forgot-password', authController.forgotPassword);
 
 /**
  * @swagger
- * /api/auth/health:
- *   get:
- *     summary: Auth service health check
- *     tags: [Health]
- *     description: Check if authentication service is running
+ * /api/auth/reset-password:
+ *   post:
+ *     summary: Reset password
+ *     tags: [Authentication]
+ *     description: Reset user password using a valid reset token
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - token
+ *               - password
+ *               - confirmPassword
+ *             properties:
+ *               token:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               confirmPassword:
+ *                 type: string
+ *           example:
+ *             token: "abcdef123456"
+ *             password: "NewPassword123!"
+ *             confirmPassword: "NewPassword123!"
  *     responses:
  *       200:
- *         description: Auth service is running
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: "Auth service is running"
- *                 timestamp:
- *                   type: string
- *                   format: date-time
+ *         description: Password reset successful
+ *       400:
+ *         description: Invalid or expired token
+ *       500:
+ *         description: Internal server error
  */
-router.get('/health', authController.healthCheck);
+router.post('/reset-password', authController.resetPassword);
 
 export default router;

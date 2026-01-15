@@ -1,5 +1,7 @@
 import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 import userService from './userService.js';
+import emailService from './emailService.js';
 
 const SALT_ROUNDS = 10;
 
@@ -158,7 +160,7 @@ class AuthService {
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
     const isValid = password.length >= minLength;
-    
+
     return {
       isValid,
       strength: isValid ? (hasUpperCase && hasLowerCase && hasNumbers && hasSpecialChar ? 'strong' : 'medium') : 'weak',
@@ -169,6 +171,78 @@ class AuthService {
         !hasSpecialChar ? 'Add special characters' : null
       ].filter(Boolean)
     };
+  }
+
+  /**
+   * Handle forgot password request
+   * @param {string} email - User email
+   */
+  async forgotPassword(email) {
+    console.log(`[DEBUG] Forgot password request for: ${email}`);
+    const user = await userService.findByEmail(email);
+    if (!user) {
+      console.log(`[DEBUG] Email not found in database: ${email}`);
+      // For security, don't reveal if email exists
+      return;
+    }
+
+    console.log(`[DEBUG] Generating reset token for user: ${user.id}`);
+    // Generate random token
+    const token = crypto.randomBytes(32).toString('hex');
+    const expires = new Date();
+    expires.setHours(expires.getHours() + 1); // 1 hour expiry
+
+    // Save token to user
+    await userService.updateUser(user.id, {
+      reset_password_token: token,
+      reset_password_expires: expires
+    });
+
+    console.log(`[DEBUG] Reset token saved to database`);
+
+    // Send email
+    const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+    const resetLink = `${clientUrl}/reset-password?token=${token}`;
+    await emailService.sendResetPasswordEmail(user.email, resetLink);
+  }
+
+  /**
+   * Reset password using token
+   * @param {string} token - Reset token
+   * @param {string} newPassword - New password
+   */
+  async resetPassword(token, newPassword) {
+    // Find user by token and ensure it's not expired
+    const sql = `
+      SELECT id, reset_password_expires 
+      FROM users 
+      WHERE reset_password_token = $1
+    `;
+    const result = await userService.query(sql, [token]);
+    const user = result.rows[0];
+
+    if (!user) {
+      throw new Error('Invalid or expired reset token');
+    }
+
+    if (new Date() > new Date(user.reset_password_expires)) {
+      throw new Error('Reset token has expired');
+    }
+
+    // Validate password strength
+    if (newPassword.length < 6) {
+      throw new Error('Password must be at least 6 characters long');
+    }
+
+    // Hash new password
+    const passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
+
+    // Update user password and clear token
+    await userService.updateUser(user.id, {
+      password_hash: passwordHash,
+      reset_password_token: null,
+      reset_password_expires: null
+    });
   }
 }
 
