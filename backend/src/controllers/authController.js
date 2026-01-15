@@ -175,9 +175,7 @@ class AuthController {
 
       return res.status(200).json({
         success: true,
-        message: user.role === 'UPLOADER'
-          ? 'Wallet connected successfully! You can now upload documents.'
-          : 'Wallet connected successfully',
+        message: 'Wallet connected successfully',
         user: {
           id: user.id,
           email: user.email,

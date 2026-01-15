@@ -15,6 +15,8 @@ export interface Document {
   created_at: string;
   updated_at: string;
   verification_count?: number;
+  uploader_name?: string;
+  uploader_email?: string;
 }
 
 export interface CreateDocumentData {

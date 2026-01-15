@@ -157,7 +157,7 @@ export function WalletConnect() {
         <div className="px-8 py-6">
           <Button
             variant="ghost"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate('/dashboard')}
             className="group"
           >
             <ArrowLeft className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform" />

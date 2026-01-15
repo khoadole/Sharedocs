@@ -112,15 +112,10 @@ class AuthService {
       throw new Error('User not found');
     }
 
-    // Update user with wallet address and upgrade to UPLOADER role
+    // Update user with wallet address only (do not change role)
     const updates = {
       wallet_address: walletAddress
     };
-
-    // Automatically upgrade USER to UPLOADER when wallet is connected
-    if (currentUser.role === 'USER') {
-      updates.role = 'UPLOADER';
-    }
 
     const updatedUser = await userService.updateUser(userId, updates);
 

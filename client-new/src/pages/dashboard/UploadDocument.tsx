@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Upload, FileCheck, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -66,8 +66,32 @@ export function UploadDocument() {
 
   const user = getUser();
 
+  useEffect(() => {
+    if (user && !user.walletAddress) {
+      toast.error('Please connect your wallet first');
+      navigate('/wallet');
+    }
+  }, [user, navigate]);
+
   if (!user) {
     return <LoginRequired />;
+  }
+
+  // Check if user role is 'USER' (read-only access)
+  if (user.role === 'USER') {
+    return (
+      <div className="max-w-4xl mx-auto">
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <Upload className="h-16 w-16 text-muted-foreground mb-4" />
+            <H2 className="text-center mb-2">Upload Permission Required</H2>
+            <Text variant="secondary" className="text-center">
+              You don't have permission to upload, create new account
+            </Text>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
