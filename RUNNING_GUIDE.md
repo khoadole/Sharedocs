@@ -28,7 +28,7 @@ cd hardhat-contract
 npx pnpm install
 
 # Client dependencies (uses npm)
-cd ../client
+cd ../client-new
 npm install
 
 # Return to root
@@ -103,7 +103,7 @@ node scripts/copy-abi.js
 **Expected Output:**
 ```
 ✅ ABI successfully copied to client/src/abis.js
-📝 Total functions: 10
+📝 Total functions: 8
 📡 Total events: 2
 
 📍 Contract Address: 0x5FbDB2315678afecb367f032d93F642f64180aa3
@@ -191,7 +191,7 @@ Make sure MetaMask is set to **"Local Hardhat"** network before using the app.
 
 **Terminal 3:**
 ```bash
-cd client
+cd client-new
 npm start
 ```
 

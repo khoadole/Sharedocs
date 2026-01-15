@@ -22,10 +22,28 @@ export function UploadDocument() {
     txHash: string;
   } | null>(null);
 
+  const isValidFileType = (file: File) => {
+    const allowedTypes = [
+      'text/plain',
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'image/png',
+      'image/jpeg',
+      'image/webp'
+    ];
+    return allowedTypes.includes(file.type) || file.type.startsWith('text/');
+  };
+
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      setFile(e.dataTransfer.files[0]);
+      const droppedFile = e.dataTransfer.files[0];
+      if (!isValidFileType(droppedFile)) {
+        toast.error('Invalid file type. Please upload a document or image.');
+        return;
+      }
+      setFile(droppedFile);
       setResult(null);
     }
   }, []);
@@ -38,7 +56,13 @@ export function UploadDocument() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
+      const selectedFile = e.target.files[0];
+      if (!isValidFileType(selectedFile)) {
+        toast.error('Invalid file type. Please upload a document or image.');
+        e.target.value = ''; // Reset input
+        return;
+      }
+      setFile(selectedFile);
       setResult(null);
     }
   };
@@ -89,6 +113,13 @@ export function UploadDocument() {
       toast.success('Document uploaded successfully!');
     } catch (error: any) {
       console.error('Upload error:', error);
+
+      // Handle MetaMask refusal
+      if (error.code === 'ACTION_REJECTED' || error.message?.includes('user rejected')) {
+        toast.error('Transaction refused by user.');
+        return;
+      }
+
       toast.error(error.message || 'Failed to upload document');
     } finally {
       setUploading(false);
@@ -118,11 +149,10 @@ export function UploadDocument() {
           <div
             onDrop={handleDrop}
             onDragOver={handleDragOver}
-            className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-              file
+            className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${file
                 ? 'border-primary bg-primary/5'
                 : 'border-border hover:border-primary/50'
-            }`}
+              }`}
           >
             {file ? (
               <div className="space-y-2">
