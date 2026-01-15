@@ -247,6 +247,82 @@ export async function logVerification({
 }
 
 /**
+ * Get all public documents with search and filter
+ */
+export async function getPublicDocuments({
+  search = '',
+  fileType = null,
+  sortBy = 'created_at',
+  order = 'DESC',
+  page = 1,
+  limit = 20
+}) {
+  const offset = (page - 1) * limit;
+  const conditions = ['visibility = $1'];
+  const values = ['PUBLIC'];
+  let paramCount = 1;
+
+  // Add search filter
+  if (search) {
+    paramCount++;
+    conditions.push(`(
+      filename ILIKE $${paramCount} OR 
+      document_hash ILIKE $${paramCount}
+    )`);
+    values.push(`%${search}%`);
+  }
+
+  // Add file type filter
+  if (fileType) {
+    paramCount++;
+    conditions.push(`file_type = $${paramCount}`);
+    values.push(fileType);
+  }
+
+  const whereClause = conditions.join(' AND ');
+
+  // Validate sortBy to prevent SQL injection
+  const allowedSortColumns = ['created_at', 'filename', 'file_size', 'updated_at'];
+  const sortColumn = allowedSortColumns.includes(sortBy) ? sortBy : 'created_at';
+  const sortOrder = order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
+
+  // Get total count
+  const countQuery = `SELECT COUNT(*) FROM documents WHERE ${whereClause}`;
+  const countResult = await pool.query(countQuery, values);
+  const total = parseInt(countResult.rows[0].count);
+
+  // Get paginated results
+  const query = `
+    SELECT 
+      d.id, d.user_id, d.document_hash, d.ipfs_cid, d.filename, d.file_size, 
+      d.file_type, d.metadata, d.blockchain_tx_hash, d.blockchain_timestamp, 
+      d.visibility, d.created_at, d.updated_at,
+      u.email as uploader_email,
+      u.full_name as uploader_name,
+      (SELECT COUNT(*) FROM verification_logs WHERE document_id = d.id) as verification_count
+    FROM documents d
+    LEFT JOIN users u ON d.user_id = u.id
+    WHERE ${whereClause}
+    ORDER BY ${sortColumn} ${sortOrder}
+    LIMIT $${paramCount + 1} OFFSET $${paramCount + 2}
+  `;
+
+  values.push(limit, offset);
+
+  const result = await pool.query(query, values);
+
+  return {
+    documents: result.rows,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit)
+    }
+  };
+}
+
+/**
  * Check if document hash already exists
  */
 export async function documentExists(documentHash) {

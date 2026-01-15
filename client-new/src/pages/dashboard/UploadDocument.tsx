@@ -12,6 +12,7 @@ import { getContract } from '@/lib/web3';
 import { toast } from 'sonner';
 import { getUser } from '@/features/auth/authStorage';
 import { LoginRequired } from '@/components/auth/LoginRequired';
+import { createDocument } from '@/features/documents/documentService';
 import {
   Dialog,
   DialogContent,
@@ -33,6 +34,7 @@ export function UploadDocument() {
     txHash: string;
     timestamp: string;
     filename: string;
+    documentId?: string;
   } | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
@@ -113,9 +115,30 @@ export function UploadDocument() {
       });
 
       const tx = await contract.uploadDocument(documentHash, cid, metadata);
-      setProgress(80);
+      setProgress(70);
 
-      await tx.wait();
+      const receipt = await tx.wait();
+      setProgress(85);
+
+      // Step 4: Save to backend database
+      toast.info('Saving to database...');
+      const dbResponse = await createDocument({
+        userId: user.id,
+        documentHash,
+        ipfsCid: cid,
+        filename: file.name,
+        fileSize: file.size,
+        fileType: file.type,
+        metadata: {
+          filename: file.name,
+          size: file.size,
+          type: file.type,
+          uploadedAt: new Date().toISOString(),
+        },
+        blockchainTxHash: tx.hash,
+        blockchainTimestamp: Math.floor(Date.now() / 1000),
+        visibility: 'PRIVATE'
+      });
       setProgress(100);
 
       const successData = {
@@ -123,7 +146,8 @@ export function UploadDocument() {
         cid,
         txHash: tx.hash,
         timestamp: new Date().toLocaleString(),
-        filename: file.name
+        filename: file.name,
+        documentId: dbResponse.document.id
       };
 
       setResult(successData);

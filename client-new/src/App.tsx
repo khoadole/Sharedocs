@@ -11,6 +11,7 @@ import { WalletConnect } from '@/pages/WalletConnect';
 import { Dashboard } from '@/pages/dashboard/Dashboard';
 import { UploadDocument } from '@/pages/dashboard/UploadDocument';
 import { VerifyDocument } from '@/pages/dashboard/VerifyDocument';
+import { PublicDocuments } from '@/pages/PublicDocuments';
 import { connectWallet, getAccount } from '@/lib/web3';
 import { toast } from 'sonner';
 import './styles/globals.css';
@@ -86,6 +87,16 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/wallet" element={<WalletConnect />} />
+          
+          {/* Public Documents Page */}
+          <Route
+            path="/documents"
+            element={
+              <Layout account={account} onConnect={handleConnect}>
+                <PublicDocuments />
+              </Layout>
+            }
+          />
 
           {/* Protected Routes with Layout */}
           <Route

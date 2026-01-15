@@ -1,8 +1,12 @@
--- Create document visibility enum
-CREATE TYPE document_visibility AS ENUM ('PUBLIC', 'PRIVATE');
+-- Create document visibility enum (skip if exists)
+DO $$ BEGIN
+    CREATE TYPE document_visibility AS ENUM ('PUBLIC', 'PRIVATE');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- Create documents table
-CREATE TABLE documents (
+CREATE TABLE IF NOT EXISTS documents (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     document_hash VARCHAR(66) UNIQUE NOT NULL,
@@ -22,16 +26,21 @@ CREATE TABLE documents (
 );
 
 -- Create indexes for performance
-CREATE INDEX idx_documents_user ON documents(user_id);
-CREATE INDEX idx_documents_hash ON documents(document_hash);
-CREATE INDEX idx_documents_visibility ON documents(visibility);
-CREATE INDEX idx_documents_created ON documents(created_at DESC);
-CREATE INDEX idx_documents_filename ON documents USING gin(to_tsvector('english', filename));
+CREATE INDEX IF NOT EXISTS idx_documents_user ON documents(user_id);
+CREATE INDEX IF NOT EXISTS idx_documents_hash ON documents(document_hash);
+CREATE INDEX IF NOT EXISTS idx_documents_visibility ON documents(visibility);
+CREATE INDEX IF NOT EXISTS idx_documents_created ON documents(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_documents_filename ON documents USING gin(to_tsvector('english', filename));
 
 -- Create verification logs table
-CREATE TYPE verification_method AS ENUM ('FILE', 'HASH');
+-- Create verification method enum (skip if exists)
+DO $$ BEGIN
+    CREATE TYPE verification_method AS ENUM ('FILE', 'HASH');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
-CREATE TABLE verification_logs (
+CREATE TABLE IF NOT EXISTS verification_logs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     document_id UUID REFERENCES documents(id) ON DELETE SET NULL,
     verified_by_user_id UUID REFERENCES users(id) ON DELETE SET NULL,
@@ -42,6 +51,6 @@ CREATE TABLE verification_logs (
 );
 
 -- Create indexes for verification logs
-CREATE INDEX idx_verifications_document ON verification_logs(document_id);
-CREATE INDEX idx_verifications_user ON verification_logs(verified_by_user_id);
-CREATE INDEX idx_verifications_timestamp ON verification_logs(verified_at DESC);
+CREATE INDEX IF NOT EXISTS idx_verifications_document ON verification_logs(document_id);
+CREATE INDEX IF NOT EXISTS idx_verifications_user ON verification_logs(verified_by_user_id);
+CREATE INDEX IF NOT EXISTS idx_verifications_timestamp ON verification_logs(verified_at DESC);

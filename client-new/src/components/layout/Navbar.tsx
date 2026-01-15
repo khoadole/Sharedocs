@@ -44,6 +44,11 @@ export function Navbar({ account }: NavbarProps) {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-6">
+          <Link to="/documents">
+            <Button variant="ghost" size="sm">
+              Browse Documents
+            </Button>
+          </Link>
           {user && (
             <>
               <Link to="/upload">
@@ -143,6 +148,9 @@ export function Navbar({ account }: NavbarProps) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem asChild>
+                  <Link to="/documents">Browse Documents</Link>
+                </DropdownMenuItem>
                 {user && (
                   <>
                     <DropdownMenuItem asChild>

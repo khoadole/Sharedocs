@@ -14,61 +14,54 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { H2, Text, Code } from '@/components/typography';
-import { getContract, formatTimestamp, formatAddress } from '@/lib/web3';
+import { formatAddress } from '@/lib/web3';
 import { getUser } from '@/features/auth/authStorage';
 import { LoginRequired } from '@/components/auth/LoginRequired';
-
-interface Document {
-  hash: string;
-  filename: string;
-  size: number;
-  timestamp: number;
-  ipfsCID: string;
-}
+import { getUserDocuments } from '@/features/documents/documentService';
+import type { Document } from '@/types/documents/types';
+import { toast } from 'sonner';
 
 export function Dashboard() {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
-  const [account, setAccount] = useState<string>('');
+  const [pagination, setPagination] = useState({
+    total: 0,
+    page: 1,
+    limit: 20,
+    totalPages: 0
+  });
 
   const user = getUser();
 
   useEffect(() => {
-    loadDocuments();
-  }, []);
+    if (user) {
+      loadDocuments();
+    }
+  }, [pagination.page]); 
 
   const loadDocuments = async () => {
+    if (!user) return;
+    
     try {
       setLoading(true);
-      const contract = await getContract(false);
-      
-      // Get current account
-      const provider = contract.runner?.provider;
-      if (provider) {
-        const accounts = await (provider as any).send('eth_requestAccounts', []);
-        setAccount(accounts[0]);
+      const response = await getUserDocuments({
+        userId: user.id,
+        page: pagination.page,
+        limit: pagination.limit,
+        sortBy: 'created_at',
+        order: 'DESC'
+      });
 
-        // Get documents by uploader
-        const docHashes = await contract.getDocumentsByUploader(accounts[0]);
-        
-        const docs: Document[] = [];
-        for (const hash of docHashes) {
-          const [ipfsCID, uploader, timestamp, metadata] = await contract.getDocument(hash);
-          const meta = JSON.parse(metadata);
-          
-          docs.push({
-            hash: hash,
-            filename: meta.filename,
-            size: meta.size,
-            timestamp: Number(timestamp),
-            ipfsCID: ipfsCID,
-          });
-        }
-
-        setDocuments(docs.reverse()); // Show newest first
-      }
+      setDocuments(response.documents);
+      // Only update total and totalPages, not page (to avoid infinite loop)
+      setPagination(prev => ({
+        ...prev,
+        total: response.pagination.total,
+        totalPages: response.pagination.totalPages
+      }));
     } catch (error) {
       console.error('Error loading documents:', error);
+      toast.error('Failed to load documents');
     } finally {
       setLoading(false);
     }
@@ -104,7 +97,7 @@ export function Dashboard() {
             <FileCheck className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{documents.length}</div>
+            <div className="text-2xl font-bold">{pagination.total}</div>
             <p className="text-xs text-muted-foreground">
               Registered on blockchain
             </p>
@@ -118,7 +111,7 @@ export function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {(documents.reduce((acc, doc) => acc + doc.size, 0) / 1024 / 1024).toFixed(2)} MB
+              {(documents.reduce((acc, doc) => acc + doc.file_size, 0) / 1024 / 1024).toFixed(2)} MB
             </div>
             <p className="text-xs text-muted-foreground">
               Stored on IPFS
@@ -128,13 +121,13 @@ export function Dashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Account</CardTitle>
+            <CardTitle className="text-sm font-medium">User</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatAddress(account)}</div>
+            <div className="text-2xl font-bold">{user?.email || 'N/A'}</div>
             <p className="text-xs text-muted-foreground">
-              Connected wallet
+              {user?.walletAddress ? formatAddress(user.walletAddress) : 'No wallet connected'}
             </p>
           </CardContent>
         </Card>
@@ -174,26 +167,27 @@ export function Dashboard() {
                   <TableHead>Upload Date</TableHead>
                   <TableHead>Hash</TableHead>
                   <TableHead>IPFS</TableHead>
+                  <TableHead>Visibility</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {documents.map((doc) => (
-                  <TableRow key={doc.hash}>
+                  <TableRow key={doc.id}>
                     <TableCell className="font-medium">{doc.filename}</TableCell>
-                    <TableCell>{(doc.size / 1024).toFixed(2)} KB</TableCell>
+                    <TableCell>{(doc.file_size / 1024).toFixed(2)} KB</TableCell>
                     <TableCell>
                       <Badge variant="outline">
-                        {formatTimestamp(doc.timestamp)}
+                        {new Date(doc.created_at).toLocaleDateString()}
                       </Badge>
                     </TableCell>
                     <TableCell>
                       <Code className="text-xs">
-                        {doc.hash.substring(0, 10)}...
+                        {doc.document_hash.substring(0, 10)}...
                       </Code>
                     </TableCell>
                     <TableCell>
                       <a
-                        href={`https://gateway.pinata.cloud/ipfs/${doc.ipfsCID}`}
+                        href={`https://gateway.pinata.cloud/ipfs/${doc.ipfs_cid}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-primary hover:underline inline-flex items-center"
@@ -202,10 +196,40 @@ export function Dashboard() {
                         <ExternalLink className="ml-1 h-3 w-3" />
                       </a>
                     </TableCell>
+                    <TableCell>
+                      <Badge variant={doc.visibility === 'PUBLIC' ? 'default' : 'secondary'}>
+                        {doc.visibility}
+                      </Badge>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
+          )}
+
+          {/* Pagination */}
+          {pagination.totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-6">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={pagination.page === 1}
+                onClick={() => setPagination(p => ({ ...p, page: p.page - 1 }))}
+              >
+                Previous
+              </Button>
+              <span className="text-sm text-muted-foreground">
+                Page {pagination.page} of {pagination.totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={pagination.page === pagination.totalPages}
+                onClick={() => setPagination(p => ({ ...p, page: p.page + 1 }))}
+              >
+                Next
+              </Button>
+            </div>
           )}
         </CardContent>
       </Card>

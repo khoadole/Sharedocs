@@ -60,9 +60,116 @@ router.post('/', documentController.createDocument);
 
 /**
  * @swagger
+ * /api/documents/user/{userId}:
+ *   get:
+ *     summary: Get documents for a specific user
+ *     tags: [Documents]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: User ID
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search by filename or hash
+ *       - in: query
+ *         name: fileType
+ *         schema:
+ *           type: string
+ *         description: Filter by file type
+ *       - in: query
+ *         name: visibility
+ *         schema:
+ *           type: string
+ *           enum: [PUBLIC, PRIVATE]
+ *         description: Filter by visibility
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [created_at, filename, file_size, updated_at]
+ *           default: created_at
+ *       - in: query
+ *         name: order
+ *         schema:
+ *           type: string
+ *           enum: [ASC, DESC]
+ *           default: DESC
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 20
+ *           maximum: 100
+ *     responses:
+ *       200:
+ *         description: List of user's documents with pagination
+ *       400:
+ *         description: Invalid user ID format
+ */
+router.get('/user/:userId', documentController.getUserDocumentsByUserId);
+
+/**
+ * @swagger
+ * /api/documents/public:
+ *   get:
+ *     summary: Get all public documents with search and filter
+ *     tags: [Documents]
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search by filename or hash
+ *       - in: query
+ *         name: fileType
+ *         schema:
+ *           type: string
+ *         description: Filter by file type
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [created_at, filename, file_size, updated_at]
+ *           default: created_at
+ *       - in: query
+ *         name: order
+ *         schema:
+ *           type: string
+ *           enum: [ASC, DESC]
+ *           default: DESC
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 20
+ *           maximum: 100
+ *     responses:
+ *       200:
+ *         description: List of public documents with pagination
+ */
+router.get('/public', documentController.getPublicDocuments);
+
+/**
+ * @swagger
  * /api/documents:
  *   get:
- *     summary: Get user's documents with search and filter
+ *     summary: Get user's documents with search and filter (legacy)
  *     tags: [Documents]
  *     security:
  *       - bearerAuth: []

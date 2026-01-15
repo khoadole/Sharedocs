@@ -82,8 +82,78 @@ export async function createDocument(req, res) {
 }
 
 /**
+ * GET /api/documents/user/:userId
+ * Get documents for a specific user (cleaner REST pattern)
+ */
+export async function getUserDocumentsByUserId(req, res) {
+  try {
+    const { userId } = req.params;
+
+    // Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid user ID format'
+      });
+    }
+
+    const {
+      search = '',
+      fileType = null,
+      visibility = null,
+      sortBy = 'created_at',
+      order = 'DESC',
+      page = 1,
+      limit = 20
+    } = req.query;
+
+    // Validate pagination
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+
+    if (isNaN(pageNum) || pageNum < 1) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid page number'
+      });
+    }
+
+    if (isNaN(limitNum) || limitNum < 1 || limitNum > 100) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid limit. Must be between 1 and 100'
+      });
+    }
+
+    const result = await documentService.getUserDocuments({
+      userId,
+      search,
+      fileType,
+      visibility,
+      sortBy,
+      order,
+      page: pageNum,
+      limit: limitNum
+    });
+
+    res.json({
+      success: true,
+      ...result
+    });
+  } catch (error) {
+    console.error('Get documents error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch documents',
+      error: error.message
+    });
+  }
+}
+
+/**
  * GET /api/documents
- * Get user's documents with search and filter
+ * Get user's documents with search and filter (legacy)
  */
 export async function getUserDocuments(req, res) {
   try {
@@ -194,6 +264,62 @@ export async function getDocumentById(req, res) {
     res.status(500).json({
       success: false,
       message: 'Failed to fetch document',
+      error: error.message
+    });
+  }
+}
+
+/**
+ * GET /api/documents/public
+ * Get all public documents with search and filter
+ */
+export async function getPublicDocuments(req, res) {
+  try {
+    const {
+      search = '',
+      fileType = null,
+      sortBy = 'created_at',
+      order = 'DESC',
+      page = 1,
+      limit = 20
+    } = req.query;
+
+    // Validate pagination
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+
+    if (isNaN(pageNum) || pageNum < 1) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid page number'
+      });
+    }
+
+    if (isNaN(limitNum) || limitNum < 1 || limitNum > 100) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid limit. Must be between 1 and 100'
+      });
+    }
+
+    const result = await documentService.getPublicDocuments({
+      search,
+      fileType,
+      sortBy,
+      order,
+      page: pageNum,
+      limit: limitNum
+    });
+
+    res.json({
+      success: true,
+      ...result
+    });
+  } catch (error) {
+    console.error('Get public documents error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch public documents',
       error: error.message
     });
   }
