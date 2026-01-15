@@ -16,10 +16,9 @@ import {
 
 interface NavbarProps {
   account?: string | null;
-  onConnect?: () => void;
 }
 
-export function Navbar({ account, onConnect }: NavbarProps) {
+export function Navbar({ account }: NavbarProps) {
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const user = getUser();
@@ -114,12 +113,12 @@ export function Navbar({ account, onConnect }: NavbarProps) {
 
           {/* Wallet Connection */}
           {account ? (
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={() => navigate('/wallet')}>
               {formatAddress(account)}
             </Button>
           ) : (
             user && (
-              <Button variant="default" size="sm" onClick={onConnect}>
+              <Button variant="default" size="sm" onClick={() => navigate('/wallet')}>
                 Connect Wallet
               </Button>
             )
