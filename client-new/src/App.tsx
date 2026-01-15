@@ -7,6 +7,7 @@ import { SignIn } from '@/pages/auth/SignIn';
 import { SignUp } from '@/pages/auth/SignUp';
 import { ForgotPassword } from '@/pages/auth/ForgotPassword';
 import { ResetPassword } from '@/pages/auth/ResetPassword';
+import { WalletConnect } from '@/pages/WalletConnect';
 import { Dashboard } from '@/pages/dashboard/Dashboard';
 import { UploadDocument } from '@/pages/dashboard/UploadDocument';
 import { VerifyDocument } from '@/pages/dashboard/VerifyDocument';
@@ -84,6 +85,7 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/wallet" element={<WalletConnect />} />
 
           {/* Protected Routes with Layout */}
           <Route
