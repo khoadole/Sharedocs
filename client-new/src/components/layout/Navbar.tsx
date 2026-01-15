@@ -112,9 +112,9 @@ export function Navbar({ account }: NavbarProps) {
           )}
 
           {/* Wallet Connection */}
-          {account ? (
+          {user?.walletAddress ? (
             <Button variant="outline" size="sm" onClick={() => navigate('/wallet')}>
-              {formatAddress(account)}
+              {formatAddress(user.walletAddress)}
             </Button>
           ) : (
             user && (
