@@ -5,7 +5,7 @@ import { FileCheck, Shield, Zap, ArrowRight } from 'lucide-react';
 
 export function Home() {
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-white">
+    <div className="relative min-h-screen w-full overflow-hidden bg-background">
       {/* Floating Gradient Orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Top Right - Pink/Red gradient */}
@@ -19,7 +19,7 @@ export function Home() {
             filter: 'blur(40px)',
           }}
         />
-        
+
         {/* Bottom Right - Green gradient */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
@@ -31,7 +31,7 @@ export function Home() {
             filter: 'blur(40px)',
           }}
         />
-        
+
         {/* Left - Teal/Cyan gradient */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
@@ -58,7 +58,7 @@ export function Home() {
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
             <FileCheck className="w-5 h-5 text-white" />
           </div>
-          <span className="font-semibold text-xl text-gray-900">ShareDocs</span>
+          <span className="font-semibold text-xl text-foreground">ShareDocs</span>
         </div>
 
         <div className="hidden md:flex items-center space-x-8">
@@ -68,8 +68,8 @@ export function Home() {
           <Link to="/features" className="text-gray-600 hover:text-gray-900 transition-colors">
             Features
           </Link>
-          <Link 
-            to="/signin" 
+          <Link
+            to="/signin"
             className="px-5 py-2 rounded-full border border-gray-300 text-gray-700 hover:border-gray-400 transition-all"
           >
             Home
@@ -93,11 +93,11 @@ export function Home() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
-          className="text-7xl md:text-8xl font-black text-gray-900 tracking-tight mb-4"
+          className="text-7xl md:text-8xl font-black text-foreground tracking-tight mb-4"
         >
           SHAREDOCS
         </motion.h1>
-        
+
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -106,14 +106,14 @@ export function Home() {
         >
           Document Verification
         </motion.p>
-        
+
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
           className="text-gray-500 max-w-xl mb-12 leading-relaxed"
         >
-          Secure your documents on the blockchain. Upload once, verify anywhere. 
+          Secure your documents on the blockchain. Upload once, verify anywhere.
           Immutable proof of existence powered by Ethereum and IPFS.
         </motion.p>
 
@@ -175,13 +175,13 @@ export function Home() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 1.2 }}
-            className="p-8 rounded-3xl bg-white/60 backdrop-blur-sm border border-gray-100 hover:shadow-xl transition-shadow duration-300"
+            className="p-8 rounded-3xl bg-card/60 backdrop-blur-sm border border-border hover:shadow-xl transition-shadow duration-300"
           >
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center mb-6">
               <Zap className="w-7 h-7 text-white" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-3">IPFS Storage</h3>
-            <p className="text-gray-500 leading-relaxed">
+            <h3 className="text-xl font-semibold text-foreground mb-3">IPFS Storage</h3>
+            <p className="text-muted-foreground leading-relaxed">
               Documents stored on decentralized IPFS network. Access your files from anywhere, anytime.
             </p>
           </motion.div>

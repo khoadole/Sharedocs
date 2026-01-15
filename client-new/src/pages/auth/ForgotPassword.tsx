@@ -31,7 +31,7 @@ export function ForgotPassword() {
     };
 
     return (
-        <div className="relative min-h-screen w-full overflow-hidden bg-white">
+        <div className="relative min-h-screen w-full overflow-hidden bg-background">
             {/* Floating Gradient Orbs */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <motion.div
@@ -95,17 +95,17 @@ export function ForgotPassword() {
                     ) : (
                         <>
                             <div className="text-center mb-10">
-                                <h1 className="text-4xl font-bold text-gray-900 mb-3">Forgot password?</h1>
-                                <p className="text-gray-500">No worries, we'll send you reset instructions.</p>
+                                <h1 className="text-4xl font-bold text-foreground mb-3">Forgot password?</h1>
+                                <p className="text-muted-foreground">No worries, we'll send you reset instructions.</p>
                             </div>
 
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="space-y-2">
-                                    <Label htmlFor="email" className="text-gray-700 font-medium">
+                                    <Label htmlFor="email" className="text-foreground font-medium">
                                         Email address
                                     </Label>
-                                    <div className="relative">
-                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                    <div className="relative group">
+                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-blue-500 transition-colors z-10" />
                                         <Input
                                             id="email"
                                             type="email"
@@ -113,7 +113,7 @@ export function ForgotPassword() {
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
                                             required
-                                            className="pl-12 h-14 rounded-2xl border-gray-200 bg-white/80 backdrop-blur-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 placeholder:text-gray-400"
+                                            className="pl-12 h-14 rounded-2xl border-input bg-background/80 backdrop-blur-sm focus:border-blue-500 focus:ring-blue-500 text-foreground placeholder:text-muted-foreground"
                                         />
                                     </div>
                                 </div>

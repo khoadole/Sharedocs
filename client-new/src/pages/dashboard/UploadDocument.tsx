@@ -1,18 +1,29 @@
 import { useState, useCallback } from 'react';
-import { Upload, FileCheck, AlertCircle, Loader2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Upload, FileCheck, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
-import { H2, Text, Code } from '@/components/typography';
+import { H2, Text } from '@/components/typography';
 import { uploadToPinata, hashFile } from '@/lib/ipfs';
 import { getContract } from '@/lib/web3';
 import { toast } from 'sonner';
 import { getUser } from '@/features/auth/authStorage';
 import { LoginRequired } from '@/components/auth/LoginRequired';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { ExternalLink, Copy } from 'lucide-react';
 
 export function UploadDocument() {
+  const navigate = useNavigate();
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -20,7 +31,10 @@ export function UploadDocument() {
     hash: string;
     cid: string;
     txHash: string;
+    timestamp: string;
+    filename: string;
   } | null>(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const isValidFileType = (file: File) => {
     const allowedTypes = [
@@ -104,12 +118,16 @@ export function UploadDocument() {
       await tx.wait();
       setProgress(100);
 
-      setResult({
+      const successData = {
         hash: documentHash,
         cid,
         txHash: tx.hash,
-      });
+        timestamp: new Date().toLocaleString(),
+        filename: file.name
+      };
 
+      setResult(successData);
+      setShowSuccessModal(true);
       toast.success('Document uploaded successfully!');
     } catch (error: any) {
       console.error('Upload error:', error);
@@ -120,7 +138,7 @@ export function UploadDocument() {
         return;
       }
 
-      toast.error(error.message || 'Failed to upload document');
+      toast.error('Failed to upload document');
     } finally {
       setUploading(false);
       setProgress(0);
@@ -150,8 +168,8 @@ export function UploadDocument() {
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${file
-                ? 'border-primary bg-primary/5'
-                : 'border-border hover:border-primary/50'
+              ? 'border-primary bg-primary/5'
+              : 'border-border hover:border-primary/50'
               }`}
           >
             {file ? (
@@ -215,42 +233,101 @@ export function UploadDocument() {
         </CardContent>
       </Card>
 
-      {/* Result Card */}
-      {result && (
-        <Card className="border-primary/50 bg-primary/5">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <FileCheck className="mr-2 h-5 w-5" />
-              Upload Successful
-            </CardTitle>
-            <CardDescription>
-              Your document has been recorded on the blockchain
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div>
-              <Label className="text-xs text-muted-foreground">Document Hash</Label>
-              <Code className="block mt-1 text-xs break-all">{result.hash}</Code>
-            </div>
-            <div>
-              <Label className="text-xs text-muted-foreground">IPFS CID</Label>
-              <Code className="block mt-1 text-xs break-all">{result.cid}</Code>
-            </div>
-            <div>
-              <Label className="text-xs text-muted-foreground">Transaction Hash</Label>
-              <Code className="block mt-1 text-xs break-all">{result.txHash}</Code>
-            </div>
-            <div className="pt-2 border-t">
-              <div className="flex items-start space-x-2 text-sm text-muted-foreground">
-                <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                <Text variant="secondary" className="text-xs">
-                  Save this hash to verify your document later. Any modification to the file will result in a different hash.
-                </Text>
+      {/* Result Card removed as it is now redundant with the Success Dialog popup */}
+
+      {/* Success Dialog */}
+      <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
+        <DialogContent className="sm:max-w-lg bg-white dark:bg-slate-950 border-border shadow-2xl p-0 overflow-hidden !opacity-100 !fill-mode-forwards">
+          <div className="bg-primary/5 p-6 border-b border-border">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-3 text-primary text-2xl font-bold">
+                <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
+                  <FileCheck className="h-6 w-6 text-primary" />
+                </div>
+                Upload Confirmed
+              </DialogTitle>
+              <DialogDescription className="text-muted-foreground mt-2">
+                Your document has been safely recorded on the blockchain and IPFS.
+              </DialogDescription>
+            </DialogHeader>
+          </div>
+
+          <div className="p-6 space-y-6">
+            <div className="space-y-4">
+              <div className="flex flex-col gap-2">
+                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Document Hash</Label>
+                <div className="flex items-center justify-between p-3 rounded-xl bg-muted/50 border border-border group">
+                  <code className="font-mono text-xs break-all leading-relaxed text-foreground pr-4">
+                    {result?.hash}
+                  </code>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 hover:bg-primary/20" onClick={() => {
+                    navigator.clipboard.writeText(result?.hash || '');
+                    toast.success('Hash copied!');
+                  }}>
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1.5 p-3 rounded-xl bg-muted/30 border border-border/50">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Timestamp</span>
+                  <span className="text-sm font-semibold">{result?.timestamp}</span>
+                </div>
+                <div className="flex flex-col gap-1.5 p-3 rounded-xl bg-muted/30 border border-border/50">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">File Name</span>
+                  <span className="text-sm font-semibold truncate" title={result?.filename}>{result?.filename}</span>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Transaction Hash</Label>
+                <div className="flex items-center justify-between p-3 rounded-xl bg-muted/50 border border-border group">
+                  <code className="font-mono text-xs break-all leading-relaxed text-foreground pr-4">
+                    {result?.txHash}
+                  </code>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 hover:bg-primary/20" onClick={() => {
+                    navigator.clipboard.writeText(result?.txHash || '');
+                    toast.success('Tx hash copied!');
+                  }}>
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      )}
+
+            <div className="space-y-3 pt-2">
+              <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Storage (IPFS)</Label>
+              <a
+                href={`https://gateway.pinata.cloud/ipfs/${result?.cid}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-4 rounded-xl border border-primary/20 bg-primary/5 hover:bg-primary/10 hover:border-primary/40 transition-all group lg:p-5"
+              >
+                <div className="flex items-center gap-4 overflow-hidden">
+                  <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 group-hover:scale-105 transition-transform">
+                    <ExternalLink className="h-6 w-6 text-primary" />
+                  </div>
+                  <div className="overflow-hidden">
+                    <p className="text-sm font-bold text-foreground">View on IPFS</p>
+                    <p className="text-[10px] text-muted-foreground truncate font-mono">ipfs://{result?.cid}</p>
+                  </div>
+                </div>
+                <ExternalLink className="h-4 w-4 text-primary opacity-40 group-hover:opacity-100" />
+              </a>
+            </div>
+          </div>
+
+          <DialogFooter className="p-6 bg-muted/20 border-t border-border gap-3 sm:gap-0">
+            <Button variant="ghost" className="rounded-xl px-6 hover:bg-muted font-medium" onClick={() => setShowSuccessModal(false)}>
+              Close
+            </Button>
+            <Button className="rounded-xl px-8 font-bold shadow-lg shadow-primary/20" onClick={() => navigate('/dashboard')}>
+              Go to Dashboard
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

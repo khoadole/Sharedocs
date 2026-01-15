@@ -61,7 +61,7 @@ export function ResetPassword() {
     };
 
     return (
-        <div className="relative min-h-screen w-full overflow-hidden bg-white">
+        <div className="relative min-h-screen w-full overflow-hidden bg-background">
             {/* Floating Gradient Orbs */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <motion.div
@@ -122,17 +122,17 @@ export function ResetPassword() {
                     ) : (
                         <>
                             <div className="text-center mb-10">
-                                <h1 className="text-4xl font-bold text-gray-900 mb-3">Set new password</h1>
-                                <p className="text-gray-500">Please enter your new password below.</p>
+                                <h1 className="text-4xl font-bold text-foreground mb-3">Set new password</h1>
+                                <p className="text-muted-foreground">Please enter your new password below.</p>
                             </div>
 
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="space-y-2">
-                                    <Label htmlFor="password" className="text-gray-700 font-medium">
+                                    <Label htmlFor="password" className="text-foreground font-medium">
                                         New Password
                                     </Label>
-                                    <div className="relative">
-                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                    <div className="relative group">
+                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-blue-500 transition-colors z-10" />
                                         <Input
                                             id="password"
                                             type="password"
@@ -140,17 +140,17 @@ export function ResetPassword() {
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
                                             required
-                                            className="pl-12 h-14 rounded-2xl border-gray-200 bg-white/80 backdrop-blur-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 placeholder:text-gray-400"
+                                            className="pl-12 h-14 rounded-2xl border-input bg-background/80 backdrop-blur-sm focus:border-blue-500 focus:ring-blue-500 text-foreground placeholder:text-muted-foreground"
                                         />
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="confirmPassword" className="text-gray-700 font-medium">
+                                    <Label htmlFor="confirmPassword" className="text-foreground font-medium">
                                         Confirm New Password
                                     </Label>
-                                    <div className="relative">
-                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                    <div className="relative group">
+                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-blue-500 transition-colors z-10" />
                                         <Input
                                             id="confirmPassword"
                                             type="password"
