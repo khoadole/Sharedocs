@@ -105,11 +105,11 @@ export function SignIn() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-gray-700 font-medium">
+              <Label htmlFor="email" className="text-foreground font-medium">
                 Email
               </Label>
-              <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <div className="relative group">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-blue-500 transition-colors z-10" />
                 <Input
                   id="email"
                   type="email"
@@ -123,11 +123,11 @@ export function SignIn() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-gray-700 font-medium">
+              <Label htmlFor="password" className="text-foreground font-medium">
                 Password
               </Label>
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <div className="relative group">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-blue-500 transition-colors z-10" />
                 <Input
                   id="password"
                   type="password"
@@ -142,8 +142,8 @@ export function SignIn() {
 
             <div className="flex items-center justify-between">
               <label className="flex items-center space-x-2 cursor-pointer">
-                <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500" />
-                <span className="text-sm text-gray-600">Remember me</span>
+                <input type="checkbox" className="w-4 h-4 rounded border-input bg-background text-blue-500 focus:ring-blue-500" />
+                <span className="text-sm text-muted-foreground">Remember me</span>
               </label>
               <Link to="/forgot-password" className="text-sm text-blue-500 hover:text-blue-600 font-medium">
                 Forgot password?
@@ -161,7 +161,7 @@ export function SignIn() {
           </form>
 
           <div className="mt-8 text-center">
-            <p className="text-gray-500">
+            <p className="text-muted-foreground">
               Don't have an account?{' '}
               <Link to="/signup" className="text-blue-500 hover:text-blue-600 font-semibold">
                 Sign up
@@ -172,17 +172,17 @@ export function SignIn() {
           {/* Divider */}
           <div className="relative my-8">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-200"></div>
+              <div className="w-full border-t border-border"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-gray-400">or continue with</span>
+              <span className="px-4 bg-background text-muted-foreground font-medium">or continue with</span>
             </div>
           </div>
 
           {/* MetaMask Button */}
           <button
             type="button"
-            className="w-full h-14 rounded-2xl border-2 border-gray-200 bg-white hover:border-orange-400 hover:bg-orange-50 transition-all duration-300 flex items-center justify-center space-x-3 font-medium text-gray-700"
+            className="w-full h-14 rounded-2xl border border-border bg-card hover:border-orange-400 hover:bg-orange-50/10 dark:hover:bg-orange-500/10 transition-all duration-300 flex items-center justify-center space-x-3 font-medium text-foreground shadow-sm"
           >
             <svg className="w-6 h-6" viewBox="0 0 35 33" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M32.9582 1L19.8241 10.7183L22.2665 4.99099L32.9582 1Z" fill="#E17726" stroke="#E17726" strokeWidth="0.25" />

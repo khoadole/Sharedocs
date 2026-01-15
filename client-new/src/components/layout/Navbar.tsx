@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Moon, Sun, Upload, FileCheck, Menu, LogOut, User } from 'lucide-react';
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme } from '@/components/theme-provider';
 import { formatAddress } from '@/lib/web3';
 import { getUser, removeUser } from '@/features/auth/authStorage';
 import { Badge } from '@/components/ui/badge';

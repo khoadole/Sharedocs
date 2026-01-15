@@ -128,11 +128,11 @@ export function ResetPassword() {
 
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="space-y-2">
-                                    <Label htmlFor="password" className="text-gray-700 font-medium">
+                                    <Label htmlFor="password" className="text-foreground font-medium">
                                         New Password
                                     </Label>
-                                    <div className="relative">
-                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                    <div className="relative group">
+                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-blue-500 transition-colors z-10" />
                                         <Input
                                             id="password"
                                             type="password"
@@ -146,11 +146,11 @@ export function ResetPassword() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="confirmPassword" className="text-gray-700 font-medium">
+                                    <Label htmlFor="confirmPassword" className="text-foreground font-medium">
                                         Confirm New Password
                                     </Label>
-                                    <div className="relative">
-                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                    <div className="relative group">
+                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-blue-500 transition-colors z-10" />
                                         <Input
                                             id="confirmPassword"
                                             type="password"
