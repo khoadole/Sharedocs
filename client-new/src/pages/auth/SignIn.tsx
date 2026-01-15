@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-
+import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { FileCheck, ArrowRight, Mail, Lock } from 'lucide-react';
+import { loginUser } from '@/features/auth/authService';
+import { saveUser } from '@/features/auth/authStorage';
 
 export function SignIn() {
   const navigate = useNavigate();
@@ -16,10 +18,25 @@ export function SignIn() {
     e.preventDefault();
     setLoading(true);
     
-    setTimeout(() => {
+    try {
+      const result = await loginUser({
+        email,
+        password
+      });
+
+      if (result.success && result.user) {
+        saveUser(result.user);
+        toast.success('Login successful!');
+        
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 1000);
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Login failed');
+    } finally {
       setLoading(false);
-      navigate('/dashboard');
-    }, 1000);
+    }
   };
 
   return (
