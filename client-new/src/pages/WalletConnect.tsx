@@ -24,10 +24,17 @@ export function WalletConnect() {
   const checkWalletConnection = async () => {
     try {
       setChecking(true);
-      const account = await getAccount();
-      setWalletAddress(account);
+      
+      // First check if user has a wallet address stored in backend
+      if (user?.walletAddress) {
+        setWalletAddress(user.walletAddress);
+      } else {
+        // If no stored wallet, don't show any connected wallet
+        setWalletAddress(null);
+      }
     } catch (error) {
       console.error('Error checking wallet:', error);
+      setWalletAddress(null);
     } finally {
       setChecking(false);
     }
