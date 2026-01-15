@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, Filter, FileText, ExternalLink, Calendar, User } from 'lucide-react';
+import { Search, Filter, FileText, ExternalLink, Calendar, User, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -7,6 +7,14 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { H2, Text, Code } from '@/components/typography';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import {
   Select,
   SelectContent,
@@ -198,123 +206,112 @@ export function PublicDocuments() {
           </Card>
         </div>
 
-        {/* Right Content - Documents Grid */}
-        <div className="lg:col-span-3 space-y-4">
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[...Array(6)].map((_, i) => (
-                <Skeleton key={i} className="h-48" />
-              ))}
-            </div>
-          ) : documents.length === 0 ? (
-            <Card>
-              <CardContent className="flex flex-col items-center justify-center py-12">
-                <FileText className="h-16 w-16 text-muted-foreground mb-4" />
-                <Text variant="secondary">No documents found</Text>
-                <Text variant="secondary" className="text-sm mt-2">
-                  Try adjusting your search or filters
-                </Text>
-              </CardContent>
-            </Card>
-          ) : (
-            <>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {documents.map((doc) => (
-                  <Card key={doc.id} className="hover:shadow-lg transition-shadow">
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-start gap-3 flex-1 min-w-0">
-                          <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                            <FileText className="h-5 w-5 text-primary" />
+        {/* Right Content - Documents Table */}
+        <div className="lg:col-span-3">
+          <Card>
+            <CardHeader>
+              <CardTitle>Public Documents</CardTitle>
+              <CardDescription>
+                All public documents registered on the blockchain
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <div className="space-y-2">
+                  {[...Array(5)].map((_, i) => (
+                    <Skeleton key={i} className="h-12 w-full" />
+                  ))}
+                </div>
+              ) : documents.length === 0 ? (
+                <div className="text-center py-8">
+                  <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <Text variant="secondary">No documents found</Text>
+                  <Text variant="secondary" className="text-sm mt-2">
+                    Try adjusting your search or filters
+                  </Text>
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Filename</TableHead>
+                      <TableHead>Size</TableHead>
+                      <TableHead>Upload Date</TableHead>
+                      <TableHead>Owner</TableHead>
+                      <TableHead>IPFS</TableHead>
+                      <TableHead>Hash</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {documents.map((doc) => (
+                      <TableRow key={doc.id}>
+                        <TableCell className="font-medium">{doc.filename}</TableCell>
+                        <TableCell>{(doc.file_size / 1024).toFixed(2)} KB</TableCell>
+                        <TableCell>
+                          <Badge variant="outline">
+                            {new Date(doc.created_at).toLocaleDateString()}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1">
+                            <User className="h-3 w-3 text-muted-foreground" />
+                            <span className="text-xs">
+                              {doc.uploader_name || doc.uploader_email || 'Anonymous'}
+                            </span>
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <CardTitle className="text-base truncate" title={doc.filename}>
-                              {doc.filename}
-                            </CardTitle>
-                            <CardDescription className="text-xs mt-1">
-                              {(doc.file_size / 1024).toFixed(2)} KB
-                            </CardDescription>
-                          </div>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      {/* Hash */}
-                      <div className="space-y-1">
-                        <Label className="text-xs text-muted-foreground">Document Hash</Label>
-                        <Code className="text-xs block">
-                          {doc.document_hash.substring(0, 20)}...
-                        </Code>
-                      </div>
-
-                      {/* IPFS CID */}
-                      <div className="space-y-1">
-                        <Label className="text-xs text-muted-foreground">IPFS CID</Label>
-                        <Code className="text-xs block truncate">
-                          {doc.ipfs_cid}
-                        </Code>
-                      </div>
-
-                      {/* Metadata */}
-                      <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
-                          {new Date(doc.created_at).toLocaleDateString()}
-                        </div>
-                        <Badge variant="outline" className="text-xs">
-                          {doc.file_type?.split('/')[1]?.toUpperCase() || 'FILE'}
-                        </Badge>
-                      </div>
-
-                      {/* Actions */}
-                      <div className="flex gap-2 pt-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex-1"
-                          onClick={() => {
-                            navigator.clipboard.writeText(doc.document_hash);
-                            toast.success('Hash copied!');
-                          }}
-                        >
-                          Copy Hash
-                        </Button>
-                        <Button
-                          size="sm"
-                          className="flex-1"
-                          asChild
-                        >
+                        </TableCell>
+                        <TableCell>
                           <a
                             href={`https://gateway.pinata.cloud/ipfs/${doc.ipfs_cid}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center justify-center gap-1"
+                            className="text-primary hover:underline inline-flex items-center"
                           >
-                            View on IPFS
-                            <ExternalLink className="h-3 w-3" />
+                            View
+                            <ExternalLink className="ml-1 h-3 w-3" />
                           </a>
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Code className="text-xs">
+                              {doc.document_hash.substring(0, 10)}...
+                            </Code>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6"
+                              onClick={() => {
+                                navigator.clipboard.writeText(doc.document_hash);
+                                toast.success('Hash copied!');
+                              }}
+                            >
+                              <Copy className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
 
               {/* Pagination */}
               {pagination.totalPages > 1 && (
-                <div className="flex items-center justify-center gap-2 pt-4">
+                <div className="flex items-center justify-center gap-2 mt-6">
                   <Button
                     variant="outline"
+                    size="sm"
                     disabled={pagination.page === 1}
                     onClick={() => setPagination(p => ({ ...p, page: p.page - 1 }))}
                   >
                     Previous
                   </Button>
-                  <span className="text-sm text-muted-foreground px-4">
+                  <span className="text-sm text-muted-foreground">
                     Page {pagination.page} of {pagination.totalPages}
                   </span>
                   <Button
                     variant="outline"
+                    size="sm"
                     disabled={pagination.page === pagination.totalPages}
                     onClick={() => setPagination(p => ({ ...p, page: p.page + 1 }))}
                   >
@@ -322,8 +319,8 @@ export function PublicDocuments() {
                   </Button>
                 </div>
               )}
-            </>
-          )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
