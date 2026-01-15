@@ -17,7 +17,7 @@ export function SignIn() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
       const result = await loginUser({
         email,
@@ -27,7 +27,7 @@ export function SignIn() {
       if (result.success && result.user) {
         saveUser(result.user);
         toast.success('Login successful!');
-        
+
         setTimeout(() => {
           navigate('/dashboard');
         }, 1000);
@@ -40,7 +40,7 @@ export function SignIn() {
   };
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-white">
+    <div className="relative min-h-screen w-full overflow-hidden bg-background">
       {/* Floating Gradient Orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Top Right - Pink gradient */}
@@ -54,7 +54,7 @@ export function SignIn() {
             filter: 'blur(60px)',
           }}
         />
-        
+
         {/* Bottom Left - Teal gradient */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
@@ -66,7 +66,7 @@ export function SignIn() {
             filter: 'blur(60px)',
           }}
         />
-        
+
         {/* Center Right - Green gradient */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
@@ -82,11 +82,11 @@ export function SignIn() {
 
       {/* Back to Home */}
       <nav className="relative z-10 px-8 py-6">
-        <Link to="/" className="inline-flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors">
+        <Link to="/" className="inline-flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
             <FileCheck className="w-5 h-5 text-white" />
           </div>
-          <span className="font-semibold text-xl text-gray-900">ShareDocs</span>
+          <span className="font-semibold text-xl text-foreground">ShareDocs</span>
         </Link>
       </nav>
 
@@ -99,8 +99,8 @@ export function SignIn() {
           className="w-full max-w-md"
         >
           <div className="text-center mb-10">
-            <h1 className="text-4xl font-bold text-gray-900 mb-3">Welcome back</h1>
-            <p className="text-gray-500">Sign in to access your documents</p>
+            <h1 className="text-4xl font-bold text-foreground mb-3">Welcome back</h1>
+            <p className="text-muted-foreground">Sign in to access your documents</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -117,7 +117,7 @@ export function SignIn() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="pl-12 h-14 rounded-2xl border-gray-200 bg-white/80 backdrop-blur-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 placeholder:text-gray-400"
+                  className="pl-12 h-14 rounded-2xl border-input bg-background/80 backdrop-blur-sm focus:border-blue-500 focus:ring-blue-500 text-foreground placeholder:text-muted-foreground"
                 />
               </div>
             </div>
@@ -135,7 +135,7 @@ export function SignIn() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="pl-12 h-14 rounded-2xl border-gray-200 bg-white/80 backdrop-blur-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 placeholder:text-gray-400"
+                  className="pl-12 h-14 rounded-2xl border-input bg-background/80 backdrop-blur-sm focus:border-blue-500 focus:ring-blue-500 text-foreground placeholder:text-muted-foreground"
                 />
               </div>
             </div>
@@ -185,14 +185,14 @@ export function SignIn() {
             className="w-full h-14 rounded-2xl border-2 border-gray-200 bg-white hover:border-orange-400 hover:bg-orange-50 transition-all duration-300 flex items-center justify-center space-x-3 font-medium text-gray-700"
           >
             <svg className="w-6 h-6" viewBox="0 0 35 33" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M32.9582 1L19.8241 10.7183L22.2665 4.99099L32.9582 1Z" fill="#E17726" stroke="#E17726" strokeWidth="0.25"/>
-              <path d="M2.04858 1L15.0707 10.809L12.7423 4.99098L2.04858 1Z" fill="#E27625" stroke="#E27625" strokeWidth="0.25"/>
-              <path d="M28.2292 23.5334L24.7346 28.872L32.2175 30.9323L34.3611 23.6501L28.2292 23.5334Z" fill="#E27625" stroke="#E27625" strokeWidth="0.25"/>
-              <path d="M0.657715 23.6501L2.78909 30.9323L10.2603 28.872L6.77738 23.5334L0.657715 23.6501Z" fill="#E27625" stroke="#E27625" strokeWidth="0.25"/>
-              <path d="M9.87573 14.5149L7.79932 17.6507L15.1906 17.9939L14.9428 9.92163L9.87573 14.5149Z" fill="#E27625" stroke="#E27625" strokeWidth="0.25"/>
-              <path d="M25.1307 14.5149L19.9926 9.83044L19.8241 17.9939L27.2036 17.6507L25.1307 14.5149Z" fill="#E27625" stroke="#E27625" strokeWidth="0.25"/>
-              <path d="M10.2603 28.872L14.7351 26.6949L10.8796 23.7011L10.2603 28.872Z" fill="#E27625" stroke="#E27625" strokeWidth="0.25"/>
-              <path d="M20.2715 26.6949L24.7346 28.872L24.1271 23.7011L20.2715 26.6949Z" fill="#E27625" stroke="#E27625" strokeWidth="0.25"/>
+              <path d="M32.9582 1L19.8241 10.7183L22.2665 4.99099L32.9582 1Z" fill="#E17726" stroke="#E17726" strokeWidth="0.25" />
+              <path d="M2.04858 1L15.0707 10.809L12.7423 4.99098L2.04858 1Z" fill="#E27625" stroke="#E27625" strokeWidth="0.25" />
+              <path d="M28.2292 23.5334L24.7346 28.872L32.2175 30.9323L34.3611 23.6501L28.2292 23.5334Z" fill="#E27625" stroke="#E27625" strokeWidth="0.25" />
+              <path d="M0.657715 23.6501L2.78909 30.9323L10.2603 28.872L6.77738 23.5334L0.657715 23.6501Z" fill="#E27625" stroke="#E27625" strokeWidth="0.25" />
+              <path d="M9.87573 14.5149L7.79932 17.6507L15.1906 17.9939L14.9428 9.92163L9.87573 14.5149Z" fill="#E27625" stroke="#E27625" strokeWidth="0.25" />
+              <path d="M25.1307 14.5149L19.9926 9.83044L19.8241 17.9939L27.2036 17.6507L25.1307 14.5149Z" fill="#E27625" stroke="#E27625" strokeWidth="0.25" />
+              <path d="M10.2603 28.872L14.7351 26.6949L10.8796 23.7011L10.2603 28.872Z" fill="#E27625" stroke="#E27625" strokeWidth="0.25" />
+              <path d="M20.2715 26.6949L24.7346 28.872L24.1271 23.7011L20.2715 26.6949Z" fill="#E27625" stroke="#E27625" strokeWidth="0.25" />
             </svg>
             <span>Connect MetaMask</span>
           </button>

@@ -61,7 +61,7 @@ export function ResetPassword() {
     };
 
     return (
-        <div className="relative min-h-screen w-full overflow-hidden bg-white">
+        <div className="relative min-h-screen w-full overflow-hidden bg-background">
             {/* Floating Gradient Orbs */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <motion.div
@@ -122,8 +122,8 @@ export function ResetPassword() {
                     ) : (
                         <>
                             <div className="text-center mb-10">
-                                <h1 className="text-4xl font-bold text-gray-900 mb-3">Set new password</h1>
-                                <p className="text-gray-500">Please enter your new password below.</p>
+                                <h1 className="text-4xl font-bold text-foreground mb-3">Set new password</h1>
+                                <p className="text-muted-foreground">Please enter your new password below.</p>
                             </div>
 
                             <form onSubmit={handleSubmit} className="space-y-6">
@@ -140,7 +140,7 @@ export function ResetPassword() {
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
                                             required
-                                            className="pl-12 h-14 rounded-2xl border-gray-200 bg-white/80 backdrop-blur-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 placeholder:text-gray-400"
+                                            className="pl-12 h-14 rounded-2xl border-input bg-background/80 backdrop-blur-sm focus:border-blue-500 focus:ring-blue-500 text-foreground placeholder:text-muted-foreground"
                                         />
                                     </div>
                                 </div>

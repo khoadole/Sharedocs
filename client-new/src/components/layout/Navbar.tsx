@@ -19,7 +19,7 @@ interface NavbarProps {
 }
 
 export function Navbar({ account }: NavbarProps) {
-  const { theme, toggleTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   const user = getUser();
 
@@ -33,12 +33,14 @@ export function Navbar({ account }: NavbarProps) {
     <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between px-4">
         {/* Logo */}
-        <Link to="/" className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2">
           <div className="h-8 w-8 rounded-lg bg-gradient-blue flex items-center justify-center">
             <FileCheck className="h-5 w-5 text-white" />
           </div>
-          <span className="font-semibold text-lg hidden sm:inline-block">ShareDocs</span>
-        </Link>
+          <span className="font-semibold text-lg hidden sm:inline-block">
+            ShareDocs
+          </span>
+        </div>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-6">
@@ -68,18 +70,26 @@ export function Navbar({ account }: NavbarProps) {
         {/* Right Section */}
         <div className="flex items-center space-x-2">
           {/* Theme Toggle */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleTheme}
-            aria-label="Toggle theme"
-          >
-            {theme === 'dark' ? (
-              <Sun className="h-5 w-5" />
-            ) : (
-              <Moon className="h-5 w-5" />
-            )}
-          </Button>
+          <div className="flex items-center space-x-1 p-1 rounded-full border bg-muted/50">
+            <Button
+              variant={theme === 'light' ? 'secondary' : 'ghost'}
+              size="icon"
+              className="h-8 w-8 rounded-full shadow-none"
+              onClick={() => setTheme('light')}
+              aria-label="Light mode"
+            >
+              <Sun className={`h-4 w-4 ${theme === 'light' ? 'text-blue-600' : 'text-muted-foreground'}`} />
+            </Button>
+            <Button
+              variant={theme === 'dark' ? 'secondary' : 'ghost'}
+              size="icon"
+              className="h-8 w-8 rounded-full shadow-none"
+              onClick={() => setTheme('dark')}
+              aria-label="Dark mode"
+            >
+              <Moon className={`h-4 w-4 ${theme === 'dark' ? 'text-blue-400' : 'text-muted-foreground'}`} />
+            </Button>
+          </div>
 
           {/* User Info & Logout */}
           {user ? (
