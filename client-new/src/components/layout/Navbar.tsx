@@ -44,28 +44,28 @@ export function Navbar({ account }: NavbarProps) {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-6">
-          <Link to="/documents">
-            <Button variant="ghost" size="sm">
+          <Link to="/documents" className="transition-transform hover:scale-105">
+            <Button variant="ghost" size="sm" className="cursor-pointer">
               Browse Documents
             </Button>
           </Link>
           {user && (
             <>
-              <Link to="/upload">
-                <Button variant="ghost" size="sm">
+              <Link to="/upload" className="transition-transform hover:scale-105">
+                <Button variant="ghost" size="sm" className="cursor-pointer">
                   <Upload className="mr-2 h-4 w-4" />
                   Upload
                 </Button>
               </Link>
-              <Link to="/dashboard">
-                <Button variant="ghost" size="sm">
+              <Link to="/dashboard" className="transition-transform hover:scale-105">
+                <Button variant="ghost" size="sm" className="cursor-pointer">
                   My Documents
                 </Button>
               </Link>
             </>
           )}
-          <Link to="/verify">
-            <Button variant="ghost" size="sm">
+          <Link to="/verify" className="transition-transform hover:scale-105">
+            <Button variant="ghost" size="sm" className="cursor-pointer">
               <FileCheck className="mr-2 h-4 w-4" />
               Verify
             </Button>

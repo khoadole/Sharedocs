@@ -8,6 +8,7 @@ Node.js backend service for Sharedocs document verification platform using Postg
 - Node.js 18+ installed
 - PostgreSQL 14+ installed and running
 - npm or yarn package manager
+- Suggest to use postgres with dbeaver
 
 ### 1. Install Dependencies
 
